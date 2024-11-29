@@ -4,8 +4,10 @@ import mongoose from 'mongoose'
 class DBConnecter {
   /* 数据库 */
   db = null
+
   /* 是否开始连接 */
   isStart = false
+
   /* Mongo数据库连接地址 */
   dbUrl = ''
   constructor() {

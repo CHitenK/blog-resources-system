@@ -2,7 +2,7 @@
 
 基于[nuxt3-pc-mobile-template](https://github.com/CHitenK/nuxt3-pc-mobile-template)框架, 技术集成： Nuxt3, Vue3, Element-plus, Vant, MongoDb，cheerio爬虫工具等；
 
-站点访问地址(PC/移动端)：[博客资源检索系统](http://120.46.210.201:2024/index)；
+PC/移动端统一集成一套项目代码，站点访问地址(PC/移动端)：[博客资源检索系统](http://120.46.210.201:2024/index)；
 
 站点系统汇总阮一峰老师每周更新的博客日志所提到的资源，然后支持关键字检索，方便查找学习。
 
