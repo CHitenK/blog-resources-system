@@ -10,11 +10,13 @@ PC/移动端统一集成一套项目代码，站点访问地址(PC/移动端)：
 
 ## 初始数据步骤
 
-1， 配置mongodb地址，即在/server/dbHelper/mongodb/connect.ts的dbUrl， 设置你的mongodb链接地址，格式如下
+1， 配置mongodb地址，新建db.config.ts， 设置你的mongodb链接地址，
+
 
   ```bash
+  /* mongodb地址 格式mongodb://<username>:<password>@<host>:<port>/<database>?<options>  */
 
-  mongodb://<username>:<password>@<host>:<port>/<database>?<options>
+  export const dbUrl = ''
   ```
    
   run dev 启动后， 控制显示'数据库连接成功'，即可
