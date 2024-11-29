@@ -8,7 +8,6 @@ dist
 
 # Node dependencies
 node_modules
-server/dbHelper/mongodb/connect.ts
 
 # Logs
 logs
@@ -24,4 +23,4 @@ logs
 .env.*
 !.env.example
 
-*/connect.ts
+db.config.ts

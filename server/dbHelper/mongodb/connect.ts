@@ -1,6 +1,8 @@
 
 import mongoose from 'mongoose'
 
+import { dbUrl } from '~/db.config'
+
 class DBConnecter {
   /* 数据库 */
   db = null
@@ -8,7 +10,7 @@ class DBConnecter {
   isStart = false
 
   /*  Mongo数据库连接地址   */
-  dbUrl = ''
+  dbUrl = dbUrl
   constructor() {
     this.startConnect()
   }
