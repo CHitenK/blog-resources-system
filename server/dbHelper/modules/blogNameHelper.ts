@@ -133,9 +133,9 @@ class BlogNameSchema {
   }
 
   /* 初始全部博客数据 谨慎执行, 可以当数据集合blognames被删除时执行 */
-  async _initBlogList(startYear = 2020, lastYaer = 2024) {
+  _initBlogList(startYear = 2020, lastYaer = 2024) {
     /* 延时5秒执行， 保证数据库完成连接后执行 */
-    setTimeout(() => {
+    setTimeout(async() => {
       const currYaer = +dayjs().format("YYYY")
         const yaer = lastYaer ?? currYaer;
         for (let y = startYear; y <= yaer; y++) {

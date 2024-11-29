@@ -28,7 +28,7 @@ PC/移动端统一集成一套项目代码，站点访问地址(PC/移动端)：
 
 去掉constructor函数下this._initData()前的注释，保存并执行this.__initData()【只执行一次， 然后注释，防止多次写入】；
 
-4, 访问http://localhost:2024即有数据
+4, 访问 http://localhost:2024 即有数据
 
 *****
 ## Setup
