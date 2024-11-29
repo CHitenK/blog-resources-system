@@ -7,7 +7,6 @@ class DBConnecter {
 
   /* 是否开始连接 */
   isStart = false
-
   /* Mongo数据库连接地址 */
   dbUrl = ''
   constructor() {
