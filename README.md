@@ -16,7 +16,7 @@ PC/移动端统一集成一套项目代码，站点访问地址(PC/移动端)：
   ```bash
   /* mongodb地址 格式mongodb://<username>:<password>@<host>:<port>/<database>?<options>  */
 
-  export const dbUrl = ''
+  export const dbUrl = '这里写mongodb连接地址' 
   ```
    
   run dev 启动后， 控制显示'数据库连接成功'，即可
