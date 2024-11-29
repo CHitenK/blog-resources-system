@@ -24,4 +24,4 @@ logs
 .env.*
 !.env.example
 
-*/mongodb/connect.ts
+*/connect.ts
