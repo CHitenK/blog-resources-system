@@ -188,17 +188,20 @@ class BlogDataSchema {
 
   /* 初始数据 */
   async _initData() {
-    const list = await blogNameHelper.findBlogByParam({ isDone: false }).sort({ date: -1 });
-    for (let i = 0; i < list.length; i++) {
-      const row = list[i];
-      // blogNameHelper.updateRowByDate(date， { isDone: false });
-      await this._handleBlogDataByHtml({
-        name: row.name,
-        href: row.href,
-        date: row.date,
-        author: row.author,
-      });
-    }
+    /* 延时5秒执行， 保证数据库完成连接后执行 */
+    setTimeout(() => {
+      const list = await blogNameHelper.findBlogByParam({ isDone: false }).sort({ date: -1 });
+      for (let i = 0; i < list.length; i++) {
+        const row = list[i];
+        // blogNameHelper.updateRowByDate(date， { isDone: false });
+        await this._handleBlogDataByHtml({
+          name: row.name,
+          href: row.href,
+          date: row.date,
+          author: row.author,
+        });
+      }
+    }, 5000)
   }
 
   /* 定时任务 */
