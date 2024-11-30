@@ -7,8 +7,12 @@ PC/移动端统一集成一套项目代码，站点访问地址(PC/移动端)：
 站点系统汇总阮一峰老师每周更新的博客日志所提到的资源数据，支持关键字检索，方便查找学习。
 
 网站示意图
-![PC](http://120.46.210.201/sources/image/blog-pc.png#pic_center=500x200 'PC端')
+
+PC 端
 ![PC12](http://120.46.210.201/sources/image/blog-pc.png)
+
+移动端
+![PC12](http://120.46.210.201/sources/image/blog-mobile.png)
 *****
 
 ## 初始数据步骤
