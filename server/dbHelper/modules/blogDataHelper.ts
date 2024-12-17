@@ -187,9 +187,9 @@ class BlogDataSchema {
   }
 
   /* 初始数据 */
-  async _initData() {
+   _initData() {
     /* 延时5秒执行， 保证数据库完成连接后执行 */
-    setTimeout(() => {
+    setTimeout(async () => {
       const list = await blogNameHelper.findBlogByParam({ isDone: false }).sort({ date: -1 });
       for (let i = 0; i < list.length; i++) {
         const row = list[i];

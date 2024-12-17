@@ -3,7 +3,7 @@ import { ElMessage } from 'element-plus'
 
 // 创建一个 axios 实例
 const service = axios.create({
-  baseURL: '', 
+  baseURL: '',
   headers: {
     'Content-Type': 'application/json',
   },
