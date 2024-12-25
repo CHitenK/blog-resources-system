@@ -170,8 +170,6 @@ class BlogDataSchema {
 
   /* 处理出最新没有获取博客数据 */
   async _getLastBlogData() {
-    /* 更新最新列表数据 */
-    await blogNameHelper.upDateLatestData()
     const list = await blogNameHelper
       .findBlogByParam({ isDone: false })
       .sort({ date: -1 });
@@ -209,7 +207,12 @@ class BlogDataSchema {
     if (this._job) this._job?.cancel()
     /* 每周六凌晨1点执行任务 */
     this._job = schedule.scheduleJob('0 1 * * 6', () => {
-      this._getLastBlogData()
+      /* 更新最新列表数据 */
+      blogNameHelper.upDateLatestData()
+      /* 10秒后执行 */
+      setTimeout(() => {
+        this._getLastBlogData()
+      }, 12 * 1000)
     });
   }
 
