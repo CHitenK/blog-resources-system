@@ -26,10 +26,17 @@ class DBConnecter {
   }
 
   connectDB() {
-    mongoose.connect(this.dbUrl)
+    mongoose.connect(this.dbUrl, {
+      maxPoolSize: 10,           // 连接池最大连接数
+      minPoolSize: 2,           // 连接池最小保持的连接数
+      connectTimeoutMS: 10000,   // 连接超时时间(毫秒)
+      socketTimeoutMS: 45000,    // 套接字超时时间(毫秒)
+      serverSelectionTimeoutMS: 5000, // 服务器选择超时
+      waitQueueTimeoutMS: 10000  // 等待连接超时
+  })
 
-    mongoose.connection.on('connected',() => {
-      console.log('------------连接数据库成功---------' + this.dbUrl);
+    mongoose.connection.on('connected', () => {
+      console.log('------------连接数据库成功---------');
       this.db = mongoose
     });
     /**

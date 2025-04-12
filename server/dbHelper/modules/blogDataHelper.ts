@@ -8,12 +8,11 @@ import { v4 as uuidv4 } from "uuid"
 import DBHelper from './../mongodb/connect'
 import blogNameHelper from './blogNameHelper'
 
-
-
 class BlogDataSchema {
   BLOG_DATA = null;
   _timer = null;
   _job = null;
+  _job1 = null;
   _timeTimes = 0;
 
   constructor() {
@@ -204,16 +203,18 @@ class BlogDataSchema {
 
   /* 定时任务 */
   _initTask() {
-    if (this._job) this._job?.cancel()
-    /* 每周六凌晨1点执行任务 */
-    this._job = schedule.scheduleJob('0 1 * * 6', () => {
-      /* 更新最新列表数据 */
-      blogNameHelper.upDateLatestData()
-      /* 10秒后执行 */
-      setTimeout(() => {
-        this._getLastBlogData()
-      }, 12 * 1000)
-    });
+    if (!this._job) {
+      /* 每天上午1:30执行 */
+      this._job = schedule.scheduleJob('30 1 * * *', () => {
+        /* 更新最新列表数据 */
+        blogNameHelper.upDateLatestData()
+        /* 30秒后执行 */
+        setTimeout(() => {
+          this._getLastBlogData()
+          console.log("-------------------任务执行完成1-------------------" + Date.now());
+        }, 30 * 1000)
+      });
+    }
   }
 
   /* html 标记关键字高亮 */
