@@ -1,7 +1,8 @@
 
 /*
   pm2 配置文件
-  sehll 命令pm2 start ./ecosystem.config.cjs
+  删除pm2进程 shell 命令 pm2 delete blog-resource-sys
+  启动pm2 进程 shell 命令 pm2 start ./ecosystem.config.cjs
 */
 module.exports = {
   apps: [
@@ -14,3 +15,4 @@ module.exports = {
     }
   ]
 }
+ 

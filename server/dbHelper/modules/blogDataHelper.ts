@@ -7,7 +7,6 @@ import { v4 as uuidv4 } from "uuid"
 
 import DBHelper from './../mongodb/connect'
 import blogNameHelper from './blogNameHelper'
-
 class BlogDataSchema {
   BLOG_DATA = null;
   _timer = null;
@@ -110,7 +109,10 @@ class BlogDataSchema {
 
   _handleBlogDataByHtml(opt = {}) {
     return new Promise(async (resolve, reject) => {
+      if (!opt.href) return Promise.resolve(true)
+        console.log(`--------------开始处理${opt}------------`);
       const res = await axios.get(opt.href)
+ 
       if (res.status === 200) {
         const $ = load(res.data);
         const aDoms = $("#main-content").find("a");
@@ -133,7 +135,7 @@ class BlogDataSchema {
           });
           return titem;
         });
-        const modus = [];
+        const modus: Iterable<any> | null | undefined = [];
         targeArr.forEach((item) => {
           if (item) {
             const tArr = item.split("BBBB");
@@ -147,7 +149,7 @@ class BlogDataSchema {
                 const p = $(`<div>${content}</div>`).find(".title");
                 const title = $(p).text();
                 modus.push({
-                  ...opt,
+                  ...opt, 
                   id: uuidv4(),
                   creatTime: Date.now(),
                   moduleName: moduleName.replace(/(\r?\n|\r)/g, ""),
@@ -159,14 +161,17 @@ class BlogDataSchema {
             });
           }
         });
-        this._insetDataMore(opt.date, modus);
+        /* 去重 */ 
+        const modusSet = new Set(modus)
+        const modusArr = Array.from(modusSet)
+        this._insetDataMore(opt.date, modusArr);
         resolve(true);
       } else {
         resolve(true)
       }
     })
   }
-
+ 
   /* 处理出最新没有获取博客数据 */
   async _getLastBlogData() {
     const list = await blogNameHelper
@@ -204,14 +209,17 @@ class BlogDataSchema {
   /* 定时任务 */
   _initTask() {
     if (!this._job) {
+      // 这里的规则是从当前时间开始，每 3 天触发一次
+      const rule = new schedule.RecurrenceRule();
+      rule.day = new schedule.Range(0, 31, 3); 
       /* 每天上午1:30执行 */
-      this._job = schedule.scheduleJob('30 1 * * *', () => {
+      this._job = schedule.scheduleJob(rule, () => {
         /* 更新最新列表数据 */
         blogNameHelper.upDateLatestData()
         /* 30秒后执行 */
         setTimeout(() => {
           this._getLastBlogData()
-          console.log("-------------------任务执行完成1-------------------" + Date.now());
+          console.log("-------------------任务执行完成-------------------" + Date.now());
         }, 30 * 1000)
       });
     }
@@ -277,10 +285,12 @@ class BlogDataSchema {
           page = 1;
         }
         const skipNum = (page - 1) * size;
+       //console.log("--------------------关键字搜索, opt-----", opt);
         const list = await this?.BLOG_DATA.find(opt)
           .sort({ date: +sort })
           .skip(skipNum)
           .limit(size);
+          // console.log("--------------------关键字搜索, list-----", list);
         resolve({
          data: list,
           total: count,

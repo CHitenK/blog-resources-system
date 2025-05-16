@@ -5,8 +5,6 @@ import { load } from 'cheerio'
 import axios from 'axios'
 
 import DBHelper from './../mongodb/connect'
-
-
 class BlogNameSchema {
   BLOG_NAME = null;
   _timer = null;
@@ -14,7 +12,6 @@ class BlogNameSchema {
 
   constructor() {
     this._init();
-
     // this._initBlogList()
   }
 
@@ -96,8 +93,8 @@ class BlogNameSchema {
     });
   }
 
-  /* 爬虫 处理html */
-  _handleHttpGetHtml(url = 'https://www.ruanyifeng.com/blog/2024/11/') {
+  /* 爬虫 处理html 月刊 */
+  _handleHttpGetHtmlByMonth(url = 'https://www.ruanyifeng.com/blog/2024/11/') {
     if (!url) return Promise.resolve()
     return new Promise(async(resolve, reject) => {
       const res = await axios.get(url)
@@ -131,7 +128,48 @@ class BlogNameSchema {
       }
     })
   }
+  /* 爬虫 处理html 周刊 */
+  _handleHttpGetHtmlByWeek(url = 'https://www.ruanyifeng.com/blog/weekly/') {
+    if (!url) return Promise.resolve()
+    return new Promise(async(resolve, reject) => {
+      const res = await axios.get(url)
+      if (res.status === 200) {
+        const $ = load(res.data);
+        const len = $(".module-list-item").length > 3 ? 3 : $(".module-list-item").length;
+        for (let i = 0; i < len; i++) {
+          const item = $(".module-list-item")[i];
+          const aEl = $(item).find("a");
+          const href = $(aEl).attr("href");
+          let name = $(aEl).text();
+          name = name.replace('email', '')
+          name = name.replace('protected', '')
+          name = name.replace(/[\[\]]/g, '');
 
+          /* 截取日期 */
+          const spanEl = $(item).find(".hint");
+          const spanElHtml = spanEl.html()
+          // 使用正则表达式提取
+          const match = spanElHtml.match(/data-cfemail="([^"]+)"/);
+          const cfEmail = match ? match[1] : '';
+          const dateStr = this.decodeCfEmail(cfEmail) ?? ''
+          const arr = dateStr.split("@")
+          const date = arr[1] ?? name
+
+          const insetOpt = {
+            href,
+            name: name,
+            date,
+            author: "阮一峰",
+            isDone: false,
+          }
+          this.insetData(insetOpt)
+          resolve(true)
+        }
+      } else {
+        resolve(true)
+      }
+    })
+  }
   /* 初始全部博客数据 谨慎执行, 可以当数据集合blognames被删除时执行 */
   _initBlogList(startYear = 2020, lastYaer = 2024) {
     /* 延时5秒执行， 保证数据库完成连接后执行 */
@@ -143,7 +181,7 @@ class BlogNameSchema {
           for (let i = 1; i <= parseInt(month); i++) {
             const str = i >= 10 ? `${y}/${i}` : `${y}/0${i}`;
             const url = `https://www.ruanyifeng.com/blog/${str}/`;
-            await this._handleHttpGetHtml(url);
+            await this._handleHttpGetHtmlByMonth(url);
           }
         }
     }, 5000)
@@ -175,44 +213,63 @@ class BlogNameSchema {
     return this?.BLOG_NAME.find(params);
   }
 
-
-
   /* 利用爬虫去更新最新的数据 */
   async upDateLatestData() {
-    return new Promise(async (resolve, rejt) => {
-      const date = await this.getLastDateByRow();
-      const arr = date?.split(".");
-      const dataYaer = arr[0];
-      const dataMonth = arr[1];
-      const yaer = dayjs().format("YYYY");
-      const month = dayjs().format("MM");
-      /* 同一年份 */
-      if (dataYaer === yaer) {
-        const start = parseInt(dataMonth);
-        const end = parseInt(month);
-        for (let i = start; i <= end; i++) {
-          const str = i >= 10 ? `${yaer}/${i}` : `${yaer}/0${i}`;
-          const url = `https://www.ruanyifeng.com/blog/${str}/`;
-          await this._handleHttpGetHtml(url);
-        }
-      } else {
-        /* 跨年份 */
-        const start = parseInt(dataMonth);
-        for (let i = start; i <= 12; i++) {
-          const str = i >= 10 ? `${dataYaer}/${i}` : `${dataYaer}/0${i}`;
-          const url = `https://www.ruanyifeng.com/blog/${str}/`;
-          await this._handleHttpGetHtml(url);
-        }
-        const end = parseInt(month);
-        for (let i = 1; i <= end; i++) {
-          const str = i >= 10 ? `${yaer}/${i}` : `${yaer}/0${i}`;
-          const url = `https://www.ruanyifeng.com/blog/${str}/`;
-          await this._handleHttpGetHtml(url);
-        }
-      }
-      resolve(true)
-    })
+    this._handleHttpGetHtmlByWeek()
+    // return new Promise(async (resolve, rejt) => {
+    //   const date = await this.getLastDateByRow();
+    //   const arr = date?.split(".");
+    //   const dataYaer = arr[0];
+    //   const dataMonth = arr[1];
+    //   const yaer = dayjs().format("YYYY");
+    //   const month = dayjs().format("MM");
+    //   /* 同一年份 */
+    //   if (dataYaer === yaer) {
+    //     const start = parseInt(dataMonth);
+    //     const end = parseInt(month);
+    //     for (let i = start; i <= end; i++) {
+    //       const str = i >= 10 ? `${yaer}/${i}` : `${yaer}/0${i}`;
+    //       const url = `https://www.ruanyifeng.com/blog/${str}/`;
+    //       await this._handleHttpGetHtmlByMonth(url);
+    //     }
+    //   } else {
+    //     /* 跨年份 */
+    //     const start = parseInt(dataMonth);
+    //     for (let i = start; i <= 12; i++) {
+    //       const str = i >= 10 ? `${dataYaer}/${i}` : `${dataYaer}/0${i}`;
+    //       const url = `https://www.ruanyifeng.com/blog/${str}/`;
+    //       await this._handleHttpGetHtmlByMonth(url);
+    //     }
+    //     const end = parseInt(month);
+    //     for (let i = 1; i <= end; i++) {
+    //       const str = i >= 10 ? `${yaer}/${i}` : `${yaer}/0${i}`;
+    //       const url = `https://www.ruanyifeng.com/blog/${str}/`;
+    //       await this._handleHttpGetHtmlByMonth(url);
+    //     }
+    //   }
+    //   resolve(true)
+    // })
   }
+  /* 解码 */
+  decodeCfEmail(encoded = '') {
+    // 提取密钥字节（data-cfemail的前两个字符）
+    const key = parseInt(encoded.substr(0, 2), 16);
+    
+    // 将十六进制字符串转换为字节数组
+    const hex = encoded.substr(2).match(/.{2}/g);
+    
+    let email = '';
+    
+    // 对每个字节进行解密
+    for (let i = 0; i < hex.length; i++) {
+      const byte = parseInt(hex[i], 16);
+      email += String.fromCharCode(byte ^ key);
+    }
+    
+    return email;
+  }
+
+  
 }
 
 const blogNameHelper = new BlogNameSchema();
